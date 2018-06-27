@@ -1,7 +1,6 @@
 <?php
-namespace MTCChain;
-use MTCChain\MTCBlock;
-use MTCChain\MTCTransaction;
+require_once 'MTCBlock.php';
+require_once 'MTCTransaction.php';
 class MTCDatabase {
     private $connection = null;
     private static $instance = null;
@@ -10,7 +9,8 @@ class MTCDatabase {
     }
 
     public static function getInstance(){
-        return $instance? $instance: new MTCDatabase();
+        if(!self::$instance) self::$instance = new MTCDatabase();
+        return self::$instance;
     }
 
     private function connect(){
@@ -21,32 +21,46 @@ class MTCDatabase {
         $blocks = [];
         $result = $this->getData('SELECT * FROM mtc_blocks');
         foreach($result as $row){
-            $blocks[] = new MTCBlock($row['id'], $row['hash'], $row['previous_block_hash'], $row['hash_salt']);
+            $transactions = $this->getTransactionByBlock($row['id']);
+            $blocks[] = new MTCBlock($row['id'], $row['previous_block_hash'], $row['hash'], $row['hash_salt'], $transactions);
         }
         return $blocks;
     }
 
     public function saveBlock(MTCBlock $block){
-        return $this->query("INSERT INTO mtc_blocks(hash, previous_block_hash, hash_salt) VALUES('{$block->getHash()}', '{$block->getPreviousBlockHash()}', '{$block->getCurrentSalt()}')");
+        $this->query("INSERT INTO mtc_blocks(`hash`, previous_block_hash, hash_salt) VALUES('{$block->getHash()}', '{$block->getPreviousBlockHash()}', '{$block->getCurrentSalt()}')");
+        return $this->getLastInsertId();
     }
 
     public function getTransactionsOfWallet($walletId){
-        $result = $this->getData('SELECT * FROM mtc_transactions WHERE to='+$walletId);
-        foreach($result as $row){
-            $blocks[] = new MTCTransaction($row['id'], $row['from'], $row['to'], $row['amount']);
-        }
+    $result = $this->getData("SELECT * FROM mtc_transactions WHERE (`to`={$walletId} OR `from`={$walletId}) AND is_pending=0");
+        return $this->parseTransactions($result);
     }
 
-    public function saveTransaction($transactionId){
-    return $this->query("UPDATE mtc_transactions SET is_pending=0 WHERE id={$transactionId}");
+    public function saveTransaction($blockId, $transactionId){
+        return $this->query("UPDATE mtc_transactions SET is_pending=0, block_id={$blockId} WHERE id={$transactionId}");
     }
 
     public function getPendingTransactions(){
-        return $this->getData('SELECT * FROM mtc_transactions WHERE is_pending=1');
+        $result = $this->getData('SELECT * FROM mtc_transactions WHERE is_pending=1');
+        return $this->parseTransactions($result);
+    }
+
+    public function getTransactionByBlock($blockId) {
+        $result = $this->getData("SELECT * FROM mtc_transactions WHERE block_id={$blockId} AND is_pending=0");
+        return $this->parseTransactions($result);
+    }
+
+    private function parseTransactions($result){
+        $transactions = [];
+        foreach($result as $row){
+            $transactions[] = new MTCTransaction($row['id'], $row['from'], $row['to'], $row['amount']);
+        }
+        return $transactions;
     }
 
     public function savePendingTransaction(MTCTransaction $transaction){
-        return $this->query("INSERT INTO mtc_transactions(from, to, amount) VALUES({$transaction->getFrom()}, {$transaction->getTo()}, {$transaction->getAmount()})");
+        return $this->query("INSERT INTO mtc_transactions(`from`, `to`, amount) VALUES({$transaction->getFrom()}, {$transaction->getTo()}, {$transaction->getAmount()})");
     }
 
     private function query($query){
@@ -56,10 +70,14 @@ class MTCDatabase {
     private function getData($query){
         $rows = [];
         $result = $this->query($query);
-        while($row = $result->fetch_row()) {
+        while($row = $result->fetch_array(MYSQLI_ASSOC)) {
             $rows[] = $row;
         }
         $result->close();
         return $rows;
+    }
+
+    private function getLastInsertId(){
+        return mysqli_insert_id($this->connection);
     }
 }

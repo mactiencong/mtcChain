@@ -1,8 +1,7 @@
 <?php
-namespace MTCChain;
-use MTCChain\MTCBlock;
-use MTCChain\MTCTransaction;
-use MTCChain\MTCDatabase;
+require_once 'MTCBlock.php';
+require_once 'MTCTransaction.php';
+require_once 'MTCDatabase.php';
 class MTCChain {
     private $blocks = [];
     private $bonus = 1;
@@ -18,7 +17,7 @@ class MTCChain {
     }
 
     private function getLastBlock(){
-        return end($block);
+        return end($this->blocks);
     }
 
     private function loadBlocks(){
@@ -27,22 +26,22 @@ class MTCChain {
 
     public function dig($walletId){
         $newBlock = $this->tryToCreateNewBlock();
-        MTCDatabase::getInstance()->saveBlock($newBlock);
-        $this->saveTransactionFromPendingTransaction();
-        MTCDatabase::getInstance()->savePendingTransaction(1, $walletId, $this->bonus);
+        $blockId = MTCDatabase::getInstance()->saveBlock($newBlock);
+        $this->saveTransactionFromPendingTransaction($blockId);
+        MTCDatabase::getInstance()->savePendingTransaction(new MTCTransaction(null, 1, $walletId, $this->bonus));
         $this->initData();
     }
 
     private function tryToCreateNewBlock(){
         $previousBlockHash = $this->getLastBlock()->getHash();
-        $newBlock = new MTCBlock(null, $previousBlockHash, null, null);
-        $newBlock->tryToFindHash($this->pendingTransactions);
+        $newBlock = new MTCBlock(null, $previousBlockHash, null, null, $this->pendingTransactions);
+        $newBlock->tryToFindHash();
         return $newBlock;
     }
 
-    private function saveTransactionFromPendingTransaction(){
+    private function saveTransactionFromPendingTransaction($blockId){
         foreach($this->pendingTransactions as $transaction){
-            MTCDatabase::getInstance()->saveTransaction($transaction->getId());
+            MTCDatabase::getInstance()->saveTransaction($blockId, $transaction->getId());
         }
     }
 
@@ -50,9 +49,9 @@ class MTCChain {
         $this->pendingTransactions = MTCDatabase::getInstance()->getPendingTransactions();
     }
 
-    public function validateChain(){
+    public function validate(){
         $blockCount = count($this->blocks);
-        for($index = 1; $index <= $blockCount; $index++){
+        for($index = 1; $index < $blockCount; $index++){
             $currentBlock = $this->blocks[$index];
             $previousBlock = $this->blocks[$index-1];
             if($this->isHashOfBlockValid($currentBlock) 
@@ -64,15 +63,11 @@ class MTCChain {
         return true;
     }
 
-    private function isHashOfBlockValid($block){
+    private function isHashOfBlockValid(MTCBlock $block){
         return $block->calculateHash() === $block->getHash();
     }
 
-    private function isHashOfTwoSequentBlockValid($currentBlock, $previousBlock){
+    private function isHashOfTwoSequentBlockValid(MTCBlock $currentBlock, MTCBlock $previousBlock){
         return $currentBlock->getPreviousBlockHash() === $previousBlock->getHash();
-    }
-
-    public function send($from, $to, $amount){
-        return MTCDatabase::getInstance()->savePendingTransaction(new MTCTransaction(null, $from, $to, $amount));
     }
 }

@@ -1,15 +1,20 @@
 <?php
-namespace MTCChain;
 class MTCBlock {
     private $id;
     private $previousBlockHash;
     private $hash;
     private $randomSalt;
-    function __construct($id, $hash, $previousBlockHash, $randomSalt){
+    private $transactions;
+    function __construct($id, $previousBlockHash, $hash, $randomSalt, $transactions){
         $this->id = $id;
         $this->hash = $hash;
         $this->previousBlockHash = $previousBlockHash;
         $this->randomSalt = $randomSalt;
+        $this->transactions = $transactions;
+    }
+
+    public function getId(){
+        return $this->id;
     }
 
     public function getHash(){
@@ -20,23 +25,23 @@ class MTCBlock {
         return $this->randomSalt;
     }
 
-    public function tryToFindHash($transactions){
+    public function tryToFindHash(){
         while(true){
             $this->randomSalt = rand();
-            $this->hash = $this->calculateHash($transactions);
+            $this->hash = $this->calculateHash();
             if($this->isAllowHash($this->hash)) {
                 return;
             }
         }
     }
 
-    public function calculateHash($transactions){
-        return md5(md5($transactions) . md5($this->$previousBlockHash) . $this->randomSalt);
+    public function calculateHash(){
+        return md5(serialize($this->transactions) . $this->previousBlockHash . $this->randomSalt);
     }
 
     private function isAllowHash($hash){
-        $theFirstCharacterOfHashString = substr($hash,0, 1);
-        return is_int($theFirstCharacterOfHashString);
+        $theFirstCharacterOfHashString = substr($hash, 0, 1);
+        return $theFirstCharacterOfHashString === "2";
     }
 
     public function getPreviousBlockHash(){
