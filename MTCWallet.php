@@ -1,16 +1,21 @@
 <?php
 namespace MTCChain;
+use MTCChain\MTCDatabase;
 class MTCWallet {
     private $id;
-    private $blocks;
+    function __construct($id){
+        $this->id = $id;
+    }
     public function checkBalance() {
         $balance = 0;
-        foreach($this->blocks as $block){
-            $transactions = $block->getTransactionOfWallet($this->id);
-            foreach($transactions as $trans){
-                $balance += $trans->getAmount();
-            }
+        $transactions = $this->getTransactionsOfWallet();
+        foreach($transactions as $transaction){
+            $balance += $transaction->getAmount();
         }
         return $balance;
+    }
+
+    private function getTransactionsOfWallet(){
+        return MTCDatabase::getInstance()->getTransactionsOfWallet($this->id);
     }
 }

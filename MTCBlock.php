@@ -2,32 +2,36 @@
 namespace MTCChain;
 class MTCBlock {
     private $id;
-    private $transactions = [];
     private $previousBlockHash;
     private $hash;
     private $randomSalt;
-    function __construct($transactions, $previousBlockHash){
-        $this->transactions = $transactions;
+    function __construct($id, $hash, $previousBlockHash, $randomSalt){
+        $this->id = $id;
+        $this->hash = $hash;
         $this->previousBlockHash = $previousBlockHash;
-        $this->hash = $this->tryToFindHash();
+        $this->randomSalt = $randomSalt;
     }
 
     public function getHash(){
         return $this->hash;
     }
 
-    private function tryToFindHash(){
+    public function getCurrentSalt(){
+        return $this->randomSalt;
+    }
+
+    public function tryToFindHash($transactions){
         while(true){
             $this->randomSalt = rand();
-            $hash = $this->calculateHash();
-            if($this->isAllowHash($hash)) {
-                return $hash;
+            $this->hash = $this->calculateHash($transactions);
+            if($this->isAllowHash($this->hash)) {
+                return;
             }
         }
     }
 
-    public function calculateHash(){
-        return md5(md5($this->transactions) . md5($this->$previousBlockHash) . $this->randomSalt);
+    public function calculateHash($transactions){
+        return md5(md5($transactions) . md5($this->$previousBlockHash) . $this->randomSalt);
     }
 
     private function isAllowHash($hash){
@@ -37,11 +41,5 @@ class MTCBlock {
 
     public function getPreviousBlockHash(){
         return $this->previousBlockHash;
-    }
-
-    public function getTransactionOfWallet($walletId){
-        return array_filter($this->transactions, function($transaction){
-            return $transaction->getTo() === $walletId;
-        });
     }
 }

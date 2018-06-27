@@ -1,13 +1,18 @@
 <?php
 namespace MTCChain;
 class MTCTransaction {
+    private $id;
     private $from;
     private $to;
     private $amount;
-    function __construct($from, $to, $amount){
+    function __construct($id, $from, $to, $amount){
         $this->from = $from;
         $this->to = $to;
         $this->amount = $amount;
+    }
+
+    public function getId(){
+        return $this->id;
     }
 
     public function getFrom(){
