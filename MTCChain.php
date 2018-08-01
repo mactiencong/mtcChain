@@ -16,19 +16,23 @@ class MTCChain {
         $this->loadTransactionsToAddToBlock();
     }
 
+    private function dbInstance(){
+        return MTCDatabase::getInstance();
+    }
+
     private function getLastBlock(){
         return end($this->blocks);
     }
 
     private function loadBlocks(){
-        $this->blocks = MTCDatabase::getInstance()->getBlocks();
+        $this->blocks = $this->dbInstance()->getBlocks();
     }
 
     public function dig($walletId){
         $newBlock = $this->tryToCreateNewBlock();
-        $blockId = MTCDatabase::getInstance()->saveBlock($newBlock);
+        $blockId = $this->dbInstance()->saveBlock($newBlock);
         $this->saveTransactionFromPendingTransaction($blockId);
-        MTCDatabase::getInstance()->savePendingTransaction(new MTCTransaction(null, 1, $walletId, $this->bonus));
+        $this->dbInstance()->savePendingTransaction(new MTCTransaction(null, 1, $walletId, $this->bonus));
         $this->initData();
     }
 
@@ -41,12 +45,12 @@ class MTCChain {
 
     private function saveTransactionFromPendingTransaction($blockId){
         foreach($this->pendingTransactions as $transaction){
-            MTCDatabase::getInstance()->saveTransaction($blockId, $transaction->getId());
+            $this->dbInstance()->saveTransaction($blockId, $transaction->getId());
         }
     }
 
     private function loadTransactionsToAddToBlock(){
-        $this->pendingTransactions = MTCDatabase::getInstance()->getPendingTransactions();
+        $this->pendingTransactions = $this->dbInstance()->getPendingTransactions();
     }
 
     public function validate(){
@@ -69,5 +73,9 @@ class MTCChain {
 
     private function isHashOfTwoSequentBlockValid(MTCBlock $currentBlock, MTCBlock $previousBlock){
         return $currentBlock->getPreviousBlockHash() === $previousBlock->getHash();
+    }
+
+    public function length(){
+        return count($this->blocks);
     }
 }

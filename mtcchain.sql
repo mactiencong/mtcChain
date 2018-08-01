@@ -82,20 +82,20 @@ INSERT INTO `mtc_transactions` (`id`, `from`, `to`, `amount`, `time`, `block_id`
 -- Table structure for table `mtc_wallet`
 --
 
-CREATE TABLE `mtc_wallet` (
+CREATE TABLE `mtc_wallets` (
+  `id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `mtc_nodes` (
+  `id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `mtc_clients` (
   `id` int(11) NOT NULL,
   `email` varchar(200) NOT NULL,
   `password` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `mtc_wallet`
---
-
-INSERT INTO `mtc_wallet` (`id`, `email`, `password`) VALUES
-(1, 'mactiencong@gmail.com', '99b9a2180084e986f86ca07a3937c3f6'),
-(2, 'matico@gmail.com', '99b9a2181234e986f86ca07a3937c3f6');
-
 --
 -- Indexes for dumped tables
 --
@@ -115,9 +115,14 @@ ALTER TABLE `mtc_transactions`
 --
 -- Indexes for table `mtc_wallet`
 --
-ALTER TABLE `mtc_wallet`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+ALTER TABLE `mtc_wallets`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `mtc_clients`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `mtc_nodes`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -138,8 +143,15 @@ ALTER TABLE `mtc_transactions`
 --
 -- AUTO_INCREMENT for table `mtc_wallet`
 --
-ALTER TABLE `mtc_wallet`
+ALTER TABLE `mtc_wallets`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+ALTER TABLE `mtc_nodes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
+ALTER TABLE `mtc_clients`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
