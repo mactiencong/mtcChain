@@ -2,7 +2,6 @@
 require_once 'MTCBlock.php';
 require_once 'MTCTransaction.php';
 require_once 'MTCNode.php';
-require_once 'MTCConfig.php';
 class MTCDatabase {
     private $connection = null;
     private static $instance = null;
@@ -79,7 +78,7 @@ class MTCDatabase {
         return $rows;
     }
 
-    private function getLastInsertId(){
+    public function getLastInsertId(){
         return mysqli_insert_id($this->connection);
     }
 
@@ -87,20 +86,16 @@ class MTCDatabase {
         return [];
     }
 
-    public function createNode(){
-        return $this->query('INSERT INTO mtc_nodes'); 
-    }
-
     public function createWallet(){
-        return $this->query('INSERT INTO mtc_wallets');
+        return $this->query('INSERT INTO mtc_wallets VALUE()');
     }
 
-    public function createClient($email, $pass, $nodeId, $walletId){
-        return $this->query("INSERT INTO mtc_clients(`email`, `pass`, `node_id`, `wallet_id`) VALUES('{$email}', '{$pass}', {$nodeId}, {$walletId})");
+    public function createNode($email, $pass, $walletId){
+        return $this->query("INSERT INTO mtc_nodes(`email`, `password`, `wallet_id`) VALUES('{$email}', '{$pass}', {$walletId})");
     }
 
-    public function getClientByEmail($email){
-        $result = $this->getData("SELECT * FROM mtc_clients WHERE email={$email} LIMIT 1");
+    public function getNodeByEmail($email){
+        $result = $this->getData("SELECT * FROM mtc_nodes WHERE email='{$email}' LIMIT 1");
         return $result? $result[0]: null;
     }
 }

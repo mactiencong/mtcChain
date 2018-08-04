@@ -20,7 +20,7 @@ class MTCWallet {
     }
 
     private function isSystem(){
-        return $this->id === 1;
+        return $this->id === "1" || $this->id === 1;
     }
 
     private function getTransactionsOfWallet(){

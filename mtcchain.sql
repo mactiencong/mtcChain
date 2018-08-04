@@ -88,13 +88,10 @@ CREATE TABLE `mtc_wallets` (
 
 
 CREATE TABLE `mtc_nodes` (
-  `id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-CREATE TABLE `mtc_clients` (
   `id` int(11) NOT NULL,
   `email` varchar(200) NOT NULL,
-  `password` varchar(256) NOT NULL
+  `password` varchar(256) NOT NULL,
+  `wallet_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 --
 -- Indexes for dumped tables
@@ -116,9 +113,6 @@ ALTER TABLE `mtc_transactions`
 -- Indexes for table `mtc_wallet`
 --
 ALTER TABLE `mtc_wallets`
-  ADD PRIMARY KEY (`id`);
-
-ALTER TABLE `mtc_clients`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `mtc_nodes`
@@ -147,9 +141,6 @@ ALTER TABLE `mtc_wallets`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE `mtc_nodes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
-
-ALTER TABLE `mtc_clients`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 COMMIT;
