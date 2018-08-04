@@ -65,7 +65,7 @@ class MTCNode {
     }
 
     public function dig(){
-        return $this->chain->dig();
+        return $this->chain->dig($this->wallet->getId());
     }
 
     public function resolve(){

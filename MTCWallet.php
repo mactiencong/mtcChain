@@ -19,6 +19,10 @@ class MTCWallet {
         return $balance;
     }
 
+    public function getId(){
+        return $this->id;
+    }
+
     private function isSystem(){
         return $this->id === "1" || $this->id === 1;
     }
