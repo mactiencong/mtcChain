@@ -11,7 +11,7 @@ io.on('connection', function (socket) {
     console.log('connection')
     socket.on('NEW_NODE', function (nodeAddress) {
         nodeAddresses.add(nodeAddress)
-        socket.emit('NODE_CONNECTED', {nodeAddress})
+        io.emit('NODE_CONNECTED', {nodeAddress})
         console.log("Add new node: ")
         console.log(nodeAddress)
     })
