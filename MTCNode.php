@@ -6,6 +6,8 @@ class MTCNode {
     private $id = null;
     private $chain = null;
     private $wallet = null;
+    private $address = null; // 127.0.0.1
+    private $port = null; // 8081
 
     public function checkBalance(){
         return $this->wallet->checkBalance();
@@ -80,6 +82,11 @@ class MTCNode {
 
     private function sync($validChain){
         $this->chain = $validChain;
+        return true;
+    }
+
+    // prevent double-spending
+    public function verifyTransaction($transactionId){
         return true;
     }
 }

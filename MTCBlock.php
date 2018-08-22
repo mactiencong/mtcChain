@@ -3,6 +3,7 @@ class MTCBlock {
     private $id;
     private $previousBlockHash;
     private $hash;
+    private $timeStamp;
     private $randomSalt;
     private $transactions;
     function __construct($id, $previousBlockHash, $hash, $randomSalt, $transactions){
