@@ -1,5 +1,6 @@
 {
     "bootstap_node": "http://127.0.0.1:8081/",
     "address": "127.0.0.1",
-    "port": 8083
+    "port": 8086,
+    "server_port": 8087
 }
