@@ -82,20 +82,15 @@ class MTCDatabase {
         return mysqli_insert_id($this->connection);
     }
 
-    public function getNeighborNodes($currentNodeId){
-        return [];
-    }
-
     public function createWallet(){
         return $this->query('INSERT INTO mtc_wallets VALUE()');
     }
 
-    public function createNode($email, $pass, $walletId){
-        return $this->query("INSERT INTO mtc_nodes(`email`, `password`, `wallet_id`) VALUES('{$email}', '{$pass}', {$walletId})");
+    public function createNode($walletId){
+        return $this->query("INSERT INTO mtc_nodes(`wallet_id`) VALUES({$walletId})");
     }
 
-    public function getNodeByEmail($email){
-        $result = $this->getData("SELECT * FROM mtc_nodes WHERE email='{$email}' LIMIT 1");
-        return $result? $result[0]: null;
+    public function getNextBlock($blockId){
+        
     }
 }

@@ -3,11 +3,15 @@ require_once 'MTCChain.php';
 require_once 'MTCWallet.php';
 require_once 'MTCDatabase.php';
 class MTCNode {
-    private $id = null;
+    private $id = NODE_ID;
     private $chain = null;
     private $wallet = null;
-    private $address = null; // 127.0.0.1
-    private $port = null; // 8081
+    private $address = NODE_ADDRESS;
+    private $port = NODE_PORT;
+
+    public function __construct(){
+        $this->load($this->id, NODE_WALLET_ID);
+    }
 
     public function checkBalance(){
         return $this->wallet->checkBalance();
@@ -15,36 +19,6 @@ class MTCNode {
 
     public function send($to, $amount){
         return $this->wallet->send($to, $amount);
-    }
-
-    private function registerNode($email, $pass, $walletId){
-        MTCDatabase::getInstance()->createNode($email, $pass, $walletId);
-        $nodeId = MTCDatabase::getInstance()->getLastInsertId();
-        return $nodeId;
-    }
-
-    private function createWallet(){
-        MTCDatabase::getInstance()->createWallet();
-        $walletId = MTCDatabase::getInstance()->getLastInsertId();
-        return $walletId;
-    }
-
-    private function checkLogin($email, $pass){
-        return MTCDatabase::getInstance()->getNodeByEmail($email);
-    }
-
-    public function login($email, $pass){
-        $node = $this->checkLogin($email, $pass);
-        if(!$node) return false;
-        $nodeId = $node['id'];
-        $walletId = $node['wallet_id'];
-        return $this->load($nodeId, $walletId);
-    }
-
-    public function register($email, $pass){
-        $walletId = $this->createWallet();
-        $nodeId = $this->registerNode($email, $pass, $walletId);
-        return $this->load($nodeId, $walletId);
     }
 
     private function load($nodeId, $walletId){

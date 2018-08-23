@@ -89,8 +89,6 @@ CREATE TABLE `mtc_wallets` (
 
 CREATE TABLE `mtc_nodes` (
   `id` int(11) NOT NULL,
-  `email` varchar(200) NOT NULL,
-  `password` varchar(256) NOT NULL,
   `wallet_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 --
