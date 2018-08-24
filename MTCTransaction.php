@@ -1,6 +1,8 @@
 <?php
 class MTCTransaction {
     private $id;
+    private $mtcTxInputs;
+    private $mtcTxOutputs;
     private $from;
     private $to;
     private $amount;

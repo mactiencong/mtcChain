@@ -61,6 +61,9 @@ class MTCNode {
 
     // prevent double-spending
     public function verifyTransaction($transactionId){
+        // 1. verify signature using public key
+        // 2. check txOutputs are not used yet
+        // 3. total amount from txOutputs >= amount will be sent
         return true;
     }
 }

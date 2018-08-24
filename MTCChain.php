@@ -32,6 +32,7 @@ class MTCChain {
         $newBlock = $this->tryToCreateNewBlock();
         $blockId = $this->dbInstance()->saveBlock($newBlock);
         $this->saveTransactionFromPendingTransaction($blockId);
+        // Coinbase transaction
         $this->dbInstance()->savePendingTransaction(new MTCTransaction(null, 1, $walletId, $this->bonus));
         $this->initData();
     }

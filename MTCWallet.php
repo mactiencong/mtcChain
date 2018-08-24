@@ -3,6 +3,8 @@ require_once 'MTCDatabase.php';
 require_once 'MTCTriggerToNodeServer.php';
 class MTCWallet {
     private $id;
+    private $privateKey;
+    private $publicKey;
     function __construct($id){
         $this->id = $id;
     }
