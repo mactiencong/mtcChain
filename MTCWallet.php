@@ -1,5 +1,6 @@
 <?php
 require_once 'MTCDatabase.php';
+require_once 'MTCTriggerToNodeServer.php';
 class MTCWallet {
     private $id;
     function __construct($id){
@@ -37,6 +38,7 @@ class MTCWallet {
 
     public function send($to, $amount){
         if(!$this->isAmountEnough($amount)) return false;
-        return MTCDatabase::getInstance()->savePendingTransaction(new MTCTransaction(null, $this->id, $to, $amount));
+        MTCDatabase::getInstance()->savePendingTransaction(new MTCTransaction(null, $this->id, $to, $amount));
+        mtcTriggerNewTransaction(array('transaction'=>'transaction_test'));
     }
 }

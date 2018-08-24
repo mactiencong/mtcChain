@@ -7,4 +7,4 @@ const MTC_DB_PASS = '';
 const NODE_ID = 1;
 const NODE_WALLET_ID = 1;
 const NODE_ADDRESS = '127.0.0.1';
-const NODE_PORT = '8802';
+const NODE_PORT = '8082';

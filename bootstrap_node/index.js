@@ -18,10 +18,19 @@ io.on('connection', (node) => {
     node.on('GET_NODE_ADDRESS', ()=>{
         pushNodeAddressForNewNode(node)
     })
+
+    node.on('NEW_TRANSACTION', (newTransaction)=>{
+        broadcastNewTransaction(newTransaction)
+    })
 })
 
+function broadcastNewTransaction(newTransaction){
+    io.emit('NEW_TRANSACTION', newTransaction)
+    console.log("NEW_TRANSACTION: "+newTransaction)
+}
+
 function broadcastNewNodeConnected(nodeAddress){
-    io.emit('NODE_CONNECTED', {nodeAddress})
+    io.emit('NODE_CONNECTED', nodeAddress)
     console.log("Add new node: ")
     console.log(nodeAddress)
 }
